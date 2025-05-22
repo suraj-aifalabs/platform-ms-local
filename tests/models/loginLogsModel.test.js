@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 const { DataTypes, Sequelize } = require('sequelize');
-const defineLoginLogsModel = require('../server/models/loginLogsModel');
+const defineLoginLogsModel = require('../../server/models/loginLogsModel');
 const { expect } = require('@jest/globals');
 
 describe('LoginLogs Model', () => {

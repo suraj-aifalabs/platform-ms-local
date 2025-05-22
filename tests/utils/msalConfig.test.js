@@ -1,5 +1,5 @@
 // loadConfig.test.js
-const { loadConfig } = require('../server/utils/msalConfig');
+const { loadConfig } = require('../../server/utils/msalConfig');
 
 describe('loadConfig', () => {
     const OLD_ENV = process.env;

@@ -2,7 +2,7 @@
 
 const request = require("supertest");
 const express = require("express");
-const errorHandler = require("../server/middlewares/errorHandler");
+const errorHandler = require("../../server/middlewares/errorHandler");
 
 // eslint-disable-next-line no-undef
 describe("Error Handler Middleware", () => {

@@ -1,9 +1,9 @@
 const express = require('express');
 const request = require('supertest');
-const healthRoutes = require('../server/routes/healthRoutes');
+const healthRoutes = require('../../server/routes/healthRoutes');
 
 // Mock controller responses
-jest.mock('../server/controllers/healthCheckController', () => ({
+jest.mock('../../server/controllers/healthCheckController', () => ({
     healthCheck: (req, res) => res.status(200).json({ status: 'ok', check: 'health' }),
     readyCheck: (req, res) => res.status(200).json({ status: 'ok', check: 'ready' }),
     serverCheck: (req, res) => res.status(200).json({ status: 'ok', check: 'server' }),

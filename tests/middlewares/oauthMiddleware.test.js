@@ -1,13 +1,13 @@
 /* eslint-env jest */
 
-const { validateOauthToken } = require('../server/middlewares/oauthMiddleware');
+const { validateOauthToken } = require('../../server/middlewares/oauthMiddleware');
 const jwt = require('jsonwebtoken');
 const httpMocks = require('node-mocks-http');
 
 jest.mock('jsonwebtoken');
-const { db } = require("../server/config/db")
+const { db } = require("../../server/config/db")
 
-jest.mock('../server/models/userSessionModel');
+jest.mock('../../server/models/userSessionModel');
 
 db.user_sessions = {
     findOne: jest.fn(),

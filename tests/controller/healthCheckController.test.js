@@ -2,7 +2,7 @@ const { describe, test, expect } = require("@jest/globals");
 const request = require('supertest');
 const express = require('express');
 const app = express()
-const { readyCheck, serverCheck, healthCheck } = require("../server/controllers/healthCheckController")
+const { readyCheck, serverCheck, healthCheck } = require("../../server/controllers/healthCheckController")
 app.get('/ready', readyCheck);
 
 describe('GET /ready-check', () => {

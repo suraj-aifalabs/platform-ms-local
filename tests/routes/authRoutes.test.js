@@ -1,10 +1,10 @@
 /* eslint-env jest */
 const express = require('express');
 const request = require('supertest');
-const authRoutes = require('../server/routes/authRoutes');
-const authController = require('../server/controllers/authController');
+const authRoutes = require('../../server/routes/authRoutes');
+const authController = require('../../server/controllers/authController');
 
-jest.mock('../server/controllers/authController');
+jest.mock('../../server/controllers/authController');
 
 const app = express();
 app.use(express.json());

@@ -1,6 +1,6 @@
 /* eslint-env jest */
 const httpMocks = require('node-mocks-http');
-const attachSessionFlag = require('../server/middlewares/responseWrapper');
+const attachSessionFlag = require('../../server/middlewares/responseWrapper');
 
 describe('attachSessionFlag middleware', () => {
     it('should append isActiveSession to JSON response if defined', () => {

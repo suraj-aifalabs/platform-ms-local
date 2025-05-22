@@ -1,10 +1,10 @@
 /* eslint-env jest */
 
 const request = require('supertest');
-const app = require('../server/app')
-const { db } = require("../server/config/db")
+const app = require('../../server/app')
+const { db } = require("../../server/config/db")
 
-jest.mock('../server/models/userSessionModel');
+jest.mock('../../server/models/userSessionModel');
 
 db.user_sessions = {
     findOne: jest.fn(),

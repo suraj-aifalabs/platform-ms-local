@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const defineUserSessionModel = require('../server/models/userSessionModel'); // Update the path as necessary
+const defineUserSessionModel = require('../../server/models/userSessionModel'); // Update the path as necessary
 
 describe('UserSession Model', () => {
     let sequelize;

@@ -1,4 +1,4 @@
-const { sanitizeRules, sanitizeInput, decodeHtmlEntitiesNative } = require('../server/utils/sanitizeRules');
+const { sanitizeRules, sanitizeInput, decodeHtmlEntitiesNative } = require('../../server/utils/sanitizeRules');
 
 describe('sanitizeRules', () => {
     describe('html', () => {
