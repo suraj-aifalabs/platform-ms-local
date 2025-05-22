@@ -31,17 +31,4 @@ describe("Error Handler Middleware", () => {
         });
     });
 
-    // it('should default to 500 and "Internal Error" if no status/message', async () => {
-    //     app.get('/default-error', (req, res, next) => {
-    //         next({});
-    //     });
-
-    //     const res = await request(app).get('/default-error');
-
-    //     expect(res.statusCode).toBe(500);
-    //     expect(res.body).toEqual({
-    //         success: false,
-    //         message: 'Internal Error',
-    //     });
-    // });
 });

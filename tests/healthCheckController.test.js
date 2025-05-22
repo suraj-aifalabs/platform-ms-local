@@ -34,7 +34,6 @@ describe('GET /', () => {
         expect(response.body).toHaveProperty('environment');
         expect(response.body).toHaveProperty('allowedOrigin');
 
-        // Optional: Validate time is a readable string
         expect(typeof response.body.time).toBe('string');
     });
 });

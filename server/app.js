@@ -50,3 +50,4 @@ app.listen(PORT, () => {
 );
 
 app.use(ErrorHandler);
+module.exports = app;
