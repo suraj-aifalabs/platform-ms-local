@@ -1,16 +1,17 @@
 /* eslint-disable no-undef */
 const { Sequelize, DataTypes } = require("sequelize");
+const { getDBName, getDBUser, getDBPassword, getDBHost } = require("../utils/envUtils");
 
 const db = {};
 
 const dbConnection = async () => {
     try {
         const sequelize = new Sequelize(
-            process.env.DB_NAME ?? "",
-            process.env.DB_USER ?? "",
-            process.env.DB_PASSWORD ?? "",
+            process.env.DB_NAME ?? await getDBName(),
+            process.env.DB_USER ?? await getDBUser(),
+            process.env.DB_PASSWORD ?? await getDBPassword(),
             {
-                host: process.env.DB_HOST ?? "",
+                host: process.env.DB_HOST ?? await getDBHost(),
                 port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
                 dialect: "postgres",
                 protocol: "postgres",
@@ -21,7 +22,7 @@ const dbConnection = async () => {
                     }
                 },
                 // eslint-disable-next-line no-console
-                logging: process.env.NODE_ENV === "development" ? console.log : false,
+                logging: process.env.NODE_ENV === "LOCAL" ? console.log : false,
                 pool: {
                     max: 5,
                     min: 0,
@@ -40,6 +41,7 @@ const dbConnection = async () => {
         db.users = require("../models/userModel")(sequelize, DataTypes);
         db.login_logs = require("../models/loginLogsModel")(sequelize, DataTypes);
         db.user_sessions = require("../models/userSessionModel")(sequelize, DataTypes);
+        db.ad_groups = require("../models/adGroupModel")(sequelize, DataTypes);
 
         // Sync models with database
         await sequelize.sync({

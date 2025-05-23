@@ -6,7 +6,7 @@ import jestPlugin from "eslint-plugin-jest";
 
 export default defineConfig([
   {
-    ignores: ["dist-server/**"],
+    ignores: ["dist-server/**", "tests/**"],
   },
   {
     files: ["**/*.{js,mjs,cjs}"], plugins: { js, jest: jestPlugin }, extends: ["js/recommended"],
