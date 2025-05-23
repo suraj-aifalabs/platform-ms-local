@@ -26,7 +26,10 @@ jest.mock("../../server/config/db", () => ({
         }
     }
 }));
-
+app.use((req, res, next) => {
+    req.user = { username: "test" };
+    next();
+});
 
 app.get('/get_login_logs', getLoginLogs);
 app.get('/get_users', getUsers);
@@ -57,7 +60,7 @@ describe("Auth Controller", () => {
                     timeZone: "IST",
                     userAgent: "test-agent"
                 })
-            // .set("Authorization", "Bearer token");
+                .set("Authorization", "Bearer token");
 
             expect(res.statusCode).toBe(200);
             expect(res.body.flag).toBe("success");
@@ -128,7 +131,7 @@ describe("Auth Controller", () => {
             db.user_sessions.findOne.mockResolvedValue(null);
 
             const res = await request(app)
-                .get("/session")
+                .get("/checkSession")
                 .set("bid", "b1")
             //.set("Authorization", "Bearer token");
 
