@@ -1,175 +1,148 @@
+
 /* eslint-env jest */
 
-const { validateOauthToken } = require('../../server/middlewares/oauthMiddleware');
-const jwt = require('jsonwebtoken');
-const httpMocks = require('node-mocks-http');
+const request = require("supertest");
+const express = require("express");
+const jwt = require("jsonwebtoken");
 
-jest.mock('jsonwebtoken');
-const { db } = require("../../server/config/db")
+jest.mock("jsonwebtoken");
 
-jest.mock('../../server/models/userSessionModel');
+const { db } = require("../../server/config/db");
+jest.mock("../../server/models/userSessionModel");
 
 db.user_sessions = {
     findOne: jest.fn(),
 };
 
+const { validateOauthToken } = require("../../server/middlewares/oauthMiddleware.js");
 
-const mockConfigPromise = Promise.resolve();
-global.configPromise = mockConfigPromise;
+describe("validateOauthToken Middleware", () => {
+    let app;
 
-const mockGetKey = jest.fn((header, callback) => callback(null, 'publicKey'));
-global.getKey = mockGetKey;
+    beforeAll(() => {
+        app = express();
+        app.use(express.json());
 
-global.tokenValidationConfig = {
-    issuer: 'expected_issuer',
-    audience: 'expected_audience',
-};
+        app.use(validateOauthToken);
 
-describe('validateOauthToken Middleware', () => {
-    let originalConfigPromise;
-    beforeEach(() => {
-        jest.clearAllMocks();
-        // Save the original promise
-        originalConfigPromise = global.configPromise;
+        app.get("/secure-endpoint", (req, res) => {
+            res.status(200).json({ success: true, user: req.user, isActiveSession: req.isActiveSession });
+        });
     });
+
     afterEach(() => {
-        // Restore the original configPromise after each test
-        global.configPromise = originalConfigPromise;
+        jest.clearAllMocks();
     });
-    it('should return 401 if Authorization header is missing', async () => {
-        const req = httpMocks.createRequest({ headers: {} });
-        const res = httpMocks.createResponse();
-        const next = jest.fn();
 
-        await validateOauthToken(req, res, next);
+    it("should return 401 if Authorization header is missing", async () => {
+        const res = await request(app).get("/secure-endpoint");
 
         expect(res.statusCode).toBe(401);
-        expect(res._getJSONData()).toEqual({
+        expect(res.body).toEqual({
             success: false,
             statusCode: 401,
-            message: 'No Token Found!',
+            message: "No Token Found!",
         });
-        expect(next).not.toHaveBeenCalled();
     });
 
-    it('should return 401 if JWT is expired', async () => {
-        const token = 'expired.token.value';
-        const req = httpMocks.createRequest({
-            headers: {
-                authorization: `Bearer ${token}`,
-                bid: '123',
-            },
-        });
-        const res = httpMocks.createResponse();
-        const next = jest.fn();
+    it("should return 401 if JWT is expired", async () => {
+        const token = "expired.token.value";
 
-        jwt.verify.mockImplementation((t, keyFn, options, cb) =>
-            cb({ message: 'jwt expired' }, null)
+        jwt.verify.mockImplementation((token, getKey, options, callback) =>
+            callback({ message: "jwt expired" }, null)
         );
 
-        await validateOauthToken(req, res, next);
+        const res = await request(app)
+            .get("/secure-endpoint")
+            .set("Authorization", `Bearer ${token}`)
+            .set("bid", "123");
 
         expect(res.statusCode).toBe(401);
-        expect(res._getJSONData()).toEqual({
+        expect(res.body).toEqual({
             success: false,
             statusCode: 401,
-            message: 'Session Expired',
+            message: "Session Expired",
         });
-        expect(next).not.toHaveBeenCalled();
     });
 
-    it('should attach user and call next on valid token with active session', async () => {
-        const req = httpMocks.createRequest({
-            headers: {
-                authorization: 'Bearer validtoken',
-                bid: 'bid123',
-            },
-        });
-        const res = httpMocks.createResponse();
-        const next = jest.fn();
-
+    it("should attach user and call next on valid token with active session", async () => {
         const decoded = {
-            name: 'John Doe [EXT]',
-            preferred_username: 'john@example.com',
-            oid: 'user-123',
-            roles: ['user'],
+            name: "John Doe [EXT]",
+            preferred_username: "john@example.com",
+            oid: "user-123",
+            roles: ["user"],
         };
 
-        jwt.verify.mockImplementation((t, keyFn, options, cb) =>
-            cb(null, decoded)
-        );
+        jwt.verify.mockImplementation((token, getKey, options, callback) => callback(null, decoded));
 
         db.user_sessions.findOne.mockResolvedValue({
             id: 1,
-            username: 'john',
-            bid: 'bid123',
+            username: "john",
+            bid: "bid123",
             is_active: true,
         });
 
-        await validateOauthToken(req, res, next);
+        const res = await request(app)
+            .get("/secure-endpoint")
+            .set("Authorization", "Bearer validtoken")
+            .set("bid", "bid123");
 
-        expect(req.user).toEqual({
-            name: 'John Doe',
-            email: 'john@example.com',
-            userId: 'user-123',
-            username: 'john',
-            roles: ['user'],
+        expect(res.statusCode).toBe(200);
+        expect(res.body.user).toEqual({
+            name: "John Doe",
+            email: "john@example.com",
+            userId: "user-123",
+            username: "john",
+            roles: ["user"],
         });
-        expect(req.isActiveSession).toBe(undefined);
+        expect(res.body.isActiveSession).toBe(true);
     });
 
-    it('should fallback gracefully if DB check fails', async () => {
-        const req = httpMocks.createRequest({
-            headers: {
-                authorization: 'Bearer validtoken',
-                bid: 'bid123',
-            },
-        });
-        const res = httpMocks.createResponse();
-        const next = jest.fn();
-
+    it("should fallback gracefully if DB check fails", async () => {
         const decoded = {
-            name: 'Jane Doe',
-            preferred_username: 'jane@example.com',
-            oid: 'user-456',
-            roles: ['admin'],
+            name: "Jane Doe",
+            preferred_username: "jane@example.com",
+            oid: "user-456",
+            roles: ["admin"],
         };
 
-        jwt.verify.mockImplementation((t, keyFn, options, cb) =>
-            cb(null, decoded)
-        );
+        jwt.verify.mockImplementation((token, getKey, options, callback) => callback(null, decoded));
 
-        db.user_sessions.findOne.mockRejectedValue(new Error('DB error'));
+        db.user_sessions.findOne.mockRejectedValue(new Error("DB error"));
 
-        await validateOauthToken(req, res, next);
+        const res = await request(app)
+            .get("/secure-endpoint")
+            .set("Authorization", "Bearer validtoken")
+            .set("bid", "bid123");
 
-        expect(req.isActiveSession).toBe(undefined);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.isActiveSession).toBeUndefined();
     });
 
-    it('should return 500 if configPromise fails', async () => {
-        const failingPromise = Promise.reject(new Error('Config failed'));
+    it("should return 200 even if configPromise fails", async () => {
+        // Override global configPromise to reject
+        const originalConfigPromise = global.configPromise;
+        global.configPromise = Promise.reject(new Error("Config failed"));
+        global.configPromise.catch(() => { }); // Avoid unhandled rejection
 
-        // Avoid unhandled rejection by attaching a catch
-        failingPromise.catch(() => { });
-        global.configPromise = failingPromise;
+        const decoded = {
+            name: "Fallback User",
+            preferred_username: "fallback@example.com",
+            oid: "user-fallback",
+            roles: ["guest"],
+        };
 
-        const req = httpMocks.createRequest({
-            headers: {
-                authorization: 'Bearer sometoken',
-                bid: 'abc',
-            },
-        });
-        const res = httpMocks.createResponse();
-        const next = jest.fn();
+        jwt.verify.mockImplementation((token, getKey, options, callback) => callback(null, decoded));
+        db.user_sessions.findOne.mockResolvedValue(null);
 
-        await validateOauthToken(req, res, next);
+        const res = await request(app)
+            .get("/secure-endpoint")
+            .set("Authorization", "Bearer sometoken")
+            .set("bid", "abc");
 
         expect(res.statusCode).toBe(200);
 
-
-        // Restore configPromise
-        global.configPromise = Promise.resolve();
+        // Restore original configPromise
+        global.configPromise = originalConfigPromise;
     });
-
-
 });
