@@ -1,11 +1,12 @@
+const { getMSALClientSecret, getMSALTenantID, getMSALClientID } = require("./envUtils");
 
 async function loadConfig() {
     // eslint-disable-next-line no-undef
-    const clientId = process.env.CLIENT_ID;
+    const clientId = process.env.CLIENT_ID ?? await getMSALClientID();
     // eslint-disable-next-line no-undef
-    const tenantId = process.env.TENANT_ID;
+    const tenantId = process.env.TENANT_ID ?? await getMSALTenantID();
     // eslint-disable-next-line no-undef
-    const ClientSecret = process.env.CLIENT_SECRET;
+    const ClientSecret = process.env.CLIENT_SECRET ?? await getMSALClientSecret();
 
     const msalConfig = {
         auth: {
