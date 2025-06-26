@@ -35,8 +35,8 @@ const getParameter = async name => {
             .promise();
     }
     catch (error) {
+        // eslint-disable-next-line no-console
         console.error(`[${new Date().toISOString()}] Error occurred: ${error.message}`);
-
     }
 
 };

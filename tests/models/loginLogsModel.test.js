@@ -30,7 +30,7 @@ describe("LoginLogs Model - PostgreSQL", () => {
     it("should define the login_logs model correctly", () => {
         expect(LoginLogs.tableName).toBe("login_logs");
         expect(LoginLogs.rawAttributes.email.allowNull).toBe(false);
-        expect(LoginLogs.rawAttributes.bid.allowNull).toBe(false);
+        expect(LoginLogs.rawAttributes.bid.allowNull).toBe(true);
     });
 
     it("should create a login log entry successfully", async () => {

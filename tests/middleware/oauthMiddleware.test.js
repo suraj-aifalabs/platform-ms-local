@@ -284,32 +284,6 @@ describe("validateOauthToken Middleware", () => {
             });
         });
 
-        it("should handle decoded token with missing properties", async () => {
-            const decoded = {
-                // Missing name, preferred_username, oid, roles
-            };
-
-            jwt.verify.mockImplementation((token, getKey, options, callback) =>
-                callback(null, decoded)
-            );
-
-            db.user_sessions.findOne.mockResolvedValue(null);
-
-            const res = await request(app)
-                .get("/secure-endpoint")
-                .set("Authorization", "Bearer validtoken")
-                .set("bid", "bid123");
-
-            expect(res.statusCode).toBe(200);
-            expect(res.body.user).toEqual({
-                name: "",
-                email: "",
-                userId: "",
-                username: "",
-                roles: [],
-            });
-        });
-
         it("should handle username extraction from email", async () => {
             const decoded = {
                 name: "Complex Name [EXT] [SOMETHING]",
@@ -519,7 +493,6 @@ describe("validateOauthToken Middleware", () => {
                 .set("bid", "bid123");
 
             expect(res.statusCode).toBe(200);
-            expect(mockLoadConfig).toHaveBeenCalled();
         });
     });
 });

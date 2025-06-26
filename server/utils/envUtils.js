@@ -2,45 +2,80 @@ require("dotenv").config();
 const { getParam } = require("./ssm.js");
 
 const getDBHost = async () => {
-    // eslint-disable-next-line no-undef
-    const res = await getParam(process.env.POSTGRESQL_HOST);
-    return res.Parameter.Value;
+    try {
+        // eslint-disable-next-line no-undef
+        const res = await getParam(process.env.POSTGRESQL_HOST);
+        return res.Parameter.Value;
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log("error getting ssm secret POSTGRESQL_HOST", e);
+    }
 };
 
 const getDBUser = async () => {
-    // eslint-disable-next-line no-undef
-    const res = await getParam(process.env.POSTGRESQL_DB_USER);
-    return res.Parameter.Value;
+    try {
+        // eslint-disable-next-line no-undef
+        const res = await getParam(process.env.POSTGRESQL_DB_USER);
+        return res.Parameter.Value;
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log("error getting ssm secret POSTGRESQL_DB_USER", e);
+    }
 };
 
 const getDBPassword = async () => {
-    // eslint-disable-next-line no-undef
-    const res = await getParam(process.env.POSTGRESQL_DB_PASSWORD);
-    return res.Parameter.Value;
+    try {
+        // eslint-disable-next-line no-undef
+        const res = await getParam(process.env.POSTGRESQL_DB_PASSWORD);
+        return res.Parameter.Value;
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log("error getting ssm secret POSTGRESQL_DB_PASSWORD", e);
+    }
 };
 
 const getDBName = async () => {
-    // eslint-disable-next-line no-undef
-    const res = await getParam(process.env.POSTGRESQL_DB_NAME);
-    return res.Parameter.Value;
+    try {
+        // eslint-disable-next-line no-undef
+        const res = await getParam(process.env.POSTGRESQL_DB_NAME);
+        return res.Parameter.Value;
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log("error getting ssm secret POSTGRESQL_DB_NAME", e);
+    }
 };
 
 const getMSALTenantID = async () => {
-    // eslint-disable-next-line no-undef
-    const res = await getParam(process.env.MSAL_TENANT_ID);
-    return res.Parameter.Value;
+    try {
+        // eslint-disable-next-line no-undef
+        const res = await getParam(process.env.MSAL_TENANT_ID);
+        return res.Parameter.Value;
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log("error getting ssm secret MSAL_TENANT_ID", e);
+    }
 };
 
 const getMSALClientID = async () => {
-    // eslint-disable-next-line no-undef
-    const res = await getParam(process.env.MSAL_CLIENT_ID);
-    return res.Parameter.Value;
+    try {
+        // eslint-disable-next-line no-undef
+        const res = await getParam(process.env.MSAL_CLIENT_ID);
+        return res.Parameter.Value;
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log("error getting ssm secret MSAL_CLIENT_ID", e);
+    }
 };
 
 const getMSALClientSecret = async () => {
-    // eslint-disable-next-line no-undef
-    const res = await getParam(process.env.MSAL_CLIENT_SECRET);
-    return res.Parameter.Value;
+    try {
+        // eslint-disable-next-line no-undef
+        const res = await getParam(process.env.MSAL_CLIENT_SECRET);
+        return res.Parameter.Value;
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log("error getting ssm secret MSAL_CLIENT_SECRET", e);
+    }
 };
 
 module.exports = {
@@ -50,5 +85,5 @@ module.exports = {
     getDBName,
     getMSALTenantID,
     getMSALClientID,
-    getMSALClientSecret
+    getMSALClientSecret,
 };

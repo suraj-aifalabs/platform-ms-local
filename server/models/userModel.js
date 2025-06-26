@@ -22,12 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        membersOf: {
-            type: DataTypes.ARRAY(DataTypes.TEXT),
-            allowNull: true,
-            defaultValue: []
-        },
-        roles: {
+        memberOf: {
             type: DataTypes.ARRAY(DataTypes.TEXT),
             allowNull: true,
             defaultValue: []
@@ -35,14 +30,6 @@ module.exports = (sequelize, DataTypes) => {
         sub: {
             type: DataTypes.BIGINT,
             allowNull: false
-        },
-        logged_in_at: {
-            type: DataTypes.DATE,
-            field: "logged_in_at"
-        },
-        logged_out_at: {
-            type: DataTypes.DATE,
-            field: "logged_out_at"
         },
         streetAddress: {
             type: DataTypes.STRING,

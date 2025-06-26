@@ -63,44 +63,4 @@ describe("getParam", () => {
         });
         expect(result).toEqual(mockValue);
     });
-
-    // it("should handle and log errors gracefully", async () => {
-    //     process.env.NODE_ENV = "production";
-
-    //     const ssmInstance = new AWS.SSM();
-    //     const mockError = new Error("SSM error");
-
-    //     ssmInstance.getParameter.mockReturnValue({
-    //         promise: jest.fn().mockRejectedValue(mockError)
-    //     });
-
-    //     console.error = jest.fn(); // Mock console.error
-
-    //     const result = await getParam("BadParam");
-
-    //     expect(console.error).toHaveBeenCalledWith(expect.stringContaining("Error occurred: SSM error"));
-    //     expect(result).toBeUndefined();
-    // });
-    // it("should handle and log errors gracefully", async () => {
-    //     process.env.NODE_ENV = "production";
-
-    //     // Mock the getParameter method to reject
-    //     const mockRejectedValue = new Error("SSM error");
-    //     const mockGetParameter = jest.fn().mockReturnValue({
-    //         promise: jest.fn().mockRejectedValue(mockRejectedValue),
-    //     });
-
-    //     // Overwrite the SSM constructor's return value
-    //     AWS.SSM.mockImplementation(() => ({
-    //         getParameter: mockGetParameter
-    //     }));
-
-    //     console.error = jest.fn(); // Mock console.error
-
-    //     const result = await getParam("BadParam");
-
-    //     expect(console.error).toHaveBeenCalledWith(expect.stringContaining("Error occurred: SSM error"));
-    //     expect(result).toBeUndefined();
-    // });
-
 });

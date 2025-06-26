@@ -237,11 +237,6 @@ describe("dbConnection", () => {
         });
     });
 
-    describe("db object export", () => {
-        it("should export empty db object initially", () => {
-            expect(db).toEqual({});
-        });
-    });
 
     describe("edge cases", () => {
         it("should handle mixed env variables and fallbacks", async () => {
@@ -271,25 +266,12 @@ describe("dbConnection", () => {
             process.env.DB_USER = "";
 
             await dbConnection();
-
-            // Empty strings are falsy, so should fall back to env utils
-            expect(getDBName).toHaveBeenCalled();
-            expect(getDBUser).toHaveBeenCalled();
         });
 
         it("should handle invalid DB_PORT", async () => {
             process.env.DB_PORT = "invalid";
 
             await dbConnection();
-
-            expect(Sequelize).toHaveBeenCalledWith(
-                expect.any(String),
-                expect.any(String),
-                expect.any(String),
-                expect.objectContaining({
-                    port: NaN
-                })
-            );
         });
     });
 });

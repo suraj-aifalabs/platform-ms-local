@@ -18,9 +18,32 @@ dbConnection();
 const app = express();
 const middlewares = {
     validateOauthToken: require("./middlewares/oauthMiddleware").validateOauthToken,
+    noCacheHeaders: require("./middlewares/noCacheHeaders.js").noCacheHeaders,
 };
 
-app.use(helmet());
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'"],
+                objectSrc: ["'none'"],
+                upgradeInsecureRequests: [],
+            },
+        },
+        frameguard: { action: "deny" },
+        xssFilter: true,
+        noSniff: true,
+        referrerPolicy: { policy: "no-referrer" },
+        permissionsPolicy: {
+            features: {
+                camera: ["()"],
+                microphone: ["()"],
+                geolocation: ["()"]
+            }
+        }
+    })
+);
 app.use(responseWrapper);
 
 app.use(express.json());
@@ -30,14 +53,14 @@ app.use(logger("dev"));
 
 const corsOptions = {
     // eslint-disable-next-line no-undef
-    origin: process.env.ALLOWED_ORIGIN || "*",
+    origin: process.env.ALLOWED_ORIGIN?.split(",").map(origin => origin.trim())|| "*",
     methods: "GET,POST,PUT,DELETE",
 };
 
 app.use(cors(corsOptions));
 
 // routes
-app.use("/api/auth", middlewares.validateOauthToken, authRoutes);
+app.use("/auth", middlewares.noCacheHeaders, middlewares.validateOauthToken, authRoutes);
 
 app.use("/", healthRoutes);
 
@@ -48,5 +71,5 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 }
 );
-module.exports = app;
+
 app.use(ErrorHandler);

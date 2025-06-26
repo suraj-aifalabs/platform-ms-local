@@ -63,7 +63,7 @@ module.exports.validateOauthToken = async (req, res, next) => {
                     name: decoded?.name?.replace(/\s*\[.*?\]\s*/g, "").trim() ?? "",
                     email: decoded?.preferred_username ?? "",
                     userId: decoded?.oid ?? "",
-                    username: decoded?.preferred_username.split("@")[0] ?? "",
+                    username: decoded?.preferred_username.split("@")[0]?.toLowerCase() ?? "",
                     roles: mock_roles !== "" ? [mock_roles] : (decoded?.roles ?? []),
                 };
                 req.user = userDetails;

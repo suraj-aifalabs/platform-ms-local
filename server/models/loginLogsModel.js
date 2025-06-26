@@ -18,23 +18,28 @@ module.exports = (sequelize, DataTypes) => {
         },
         accessToken: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: true,
+            defaultValue: ""
         },
         ipAddress: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true,
+            defaultValue: ""
         },
         timeZone: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true,
+            defaultValue: ""
         },
         userAgent: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true,
+            defaultValue: ""
         },
         bid: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true,
+            defaultValue: ""
         },
     }, {
         schema: "public",

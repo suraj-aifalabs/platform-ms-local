@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 const request = require("supertest");
 const express = require("express");
 const dotenv = require("dotenv");
@@ -49,7 +47,7 @@ describe("Express Application", () => {
 
         const { validateOauthToken } = require("../server/middlewares/oauthMiddleware");
 
-        app.use("/api/auth", validateOauthToken, authRoutes);
+        app.use("/auth", validateOauthToken, authRoutes);
         app.use("/", healthRoutes);
 
         app.use(ErrorHandler);
@@ -63,7 +61,7 @@ describe("Express Application", () => {
     });
 
     it("should access auth routes (mocked middleware allows)", async () => {
-        const res = await request(app).post("/api/auth/login").send({ username: "test", password: "password" });
+        const res = await request(app).post("/auth/login").send({ username: "test", password: "password" });
         // Expecting 404 or whatever your authRoutes returns if login route is not defined in mock
         expect(res.statusCode).toBe(404);
     });
