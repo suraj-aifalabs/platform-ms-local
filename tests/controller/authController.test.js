@@ -1,19 +1,26 @@
 const request = require("supertest");
-// jest.mock("../../server/middlewares/oauthMiddleware", () =>
-//     require("../mocks/mockValidateOauthToken")
-// );
 const express = require('express');
 const app = express();
 app.use(express.json());
 const { db } = require("../../server/config/db");
-const { authAction, getUsers, createUsers, getLoginLogs, checkSession } = require("../../server/controllers/authController")
+const {
+    authAction,
+    getUsers,
+    createUsers,
+    getLoginLogs,
+    checkSession,
+    getPermissions,
+    exportLoginLogs
+} = require("../../server/controllers/authController");
 
+// Mock dependencies
 jest.mock("../../server/config/db", () => ({
     dbConnection: jest.fn(),
     db: {
         login_logs: {
             create: jest.fn(),
-            findAndCountAll: jest.fn()
+            findAndCountAll: jest.fn(),
+            findAll: jest.fn()
         },
         user_sessions: {
             findOne: jest.fn(),
@@ -22,21 +29,50 @@ jest.mock("../../server/config/db", () => ({
         },
         users: {
             create: jest.fn(),
-            findAll: jest.fn()
+            findAll: jest.fn(),
+            findOne: jest.fn(),
+            update: jest.fn()
+        },
+        Sequelize: {
+            Op: {
+                or: jest.fn()
+            },
+            fn: jest.fn(),
+            col: jest.fn(),
+            where: jest.fn()
         }
     }
 }));
+
+// Mock permission utils
+jest.mock("../../server/utils/permissionUtils", () => ({
+    PERMISSION_CONST: [],
+    DEFAULT_PERMISSION: []
+}));
+
+// Mock graph utils
+jest.mock("../../server/utils/graphUtils", () => ({
+    graphAPI: jest.fn()
+}));
+
+// Add middleware to inject user
 app.use((req, res, next) => {
-    req.user = { username: "test" };
+    req.user = {
+        username: "test",
+        email: "test@example.com",
+        name: "Test User"
+    };
     next();
 });
 
+// Setup routes
 app.get('/get_login_logs', getLoginLogs);
 app.get('/get_users', getUsers);
-app.get('/checkSession', checkSession)
+app.get('/checkSession', checkSession);
+app.get('/get_permissions', getPermissions);
+app.get('/export_login_logs', exportLoginLogs);
 app.post('/auth_action', authAction);
-app.post('/create_users', createUsers)
-
+app.post('/create_users', createUsers);
 
 describe("Auth Controller", () => {
     beforeEach(() => {
@@ -49,6 +85,8 @@ describe("Auth Controller", () => {
             db.user_sessions.update.mockResolvedValue([1]);
             db.user_sessions.findOne.mockResolvedValue(null);
             db.user_sessions.create.mockResolvedValue({});
+            db.users.findOne.mockResolvedValue({});
+            db.users.update.mockResolvedValue([1]);
 
             const res = await request(app)
                 .post("/auth_action")
@@ -58,11 +96,38 @@ describe("Auth Controller", () => {
                     ipAddress: "127.0.0.1",
                     bid: "browser1",
                     timeZone: "IST",
-                    userAgent: "test-agent"
-                })
-                .set("Authorization", "Bearer token");
+                    userAgent: "test-agent",
+                    email: "test@example.com",
+                    name: "Test User"
+                });
 
-            expect(res.statusCode).toBe(400);
+            expect(res.statusCode).toBe(200);
+            expect(db.login_logs.create).toHaveBeenCalled();
+            expect(db.user_sessions.update).toHaveBeenCalled();
+        });
+
+        it("should handle logout action", async () => {
+            db.login_logs.create.mockResolvedValue({});
+            db.user_sessions.update.mockResolvedValue([1]);
+
+            const res = await request(app)
+                .post("/auth_action")
+                .send({
+                    action: "logout",
+                    accessToken: "abc123",
+                    ipAddress: "127.0.0.1",
+                    bid: "browser1",
+                    timeZone: "IST",
+                    userAgent: "test-agent",
+                    email: "test@example.com",
+                    name: "Test User"
+                });
+
+            expect(res.statusCode).toBe(200);
+            expect(db.user_sessions.update).toHaveBeenCalledWith(
+                { is_active: false },
+                { where: { username: "test", bid: "browser1" } }
+            );
         });
 
         it("should return 400 on validation error", async () => {
@@ -85,7 +150,26 @@ describe("Auth Controller", () => {
             const res = await request(app).get("/get_login_logs");
 
             expect(res.statusCode).toBe(200);
-            expect(res.body.data.length).toBeGreaterThanOrEqual(0);
+            expect(res.body.data.length).toBe(1);
+            expect(res.body.pagination.totalRecords).toBe(1);
+        });
+
+        it("should handle search query", async () => {
+            db.login_logs.findAndCountAll.mockResolvedValue({
+                count: 1,
+                rows: [{ email: "test@example.com", name: "Test", action: "login" }]
+            });
+
+            const res = await request(app)
+                .get("/get_login_logs")
+                .query({ search: "test" });
+
+            expect(res.statusCode).toBe(200);
+            expect(db.login_logs.findAndCountAll).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.any(Object)
+                })
+            );
         });
     });
 
@@ -107,7 +191,7 @@ describe("Auth Controller", () => {
             const res = await request(app).get("/get_users");
 
             expect(res.statusCode).toBe(200);
-            expect(res.body.users.length).toBeGreaterThanOrEqual(1);
+            expect(res.body.users.length).toBe(1);
         });
     });
 
@@ -117,8 +201,7 @@ describe("Auth Controller", () => {
 
             const res = await request(app)
                 .get("/checkSession")
-                .set("bid", "b1")
-            //.set("Authorization", "Bearer token");
+                .set("bid", "b1");
 
             expect(res.statusCode).toBe(200);
             expect(res.body.isActiveSession).toBe(true);
@@ -129,11 +212,62 @@ describe("Auth Controller", () => {
 
             const res = await request(app)
                 .get("/checkSession")
-                .set("bid", "b1")
-            //.set("Authorization", "Bearer token");
+                .set("bid", "b1");
 
             expect(res.statusCode).toBe(401);
             expect(res.body.isActiveSession).toBe(false);
+        });
+
+        it("should return 401 if bid header is missing", async () => {
+            const res = await request(app).get("/checkSession");
+
+            expect(res.statusCode).toBe(401);
+            expect(res.body.message).toBe("No ID or username found");
+        });
+    });
+
+    describe("GET /get_permissions", () => {
+
+
+        it("should handle users with no permissions", async () => {
+            db.users.findOne.mockResolvedValue({
+                memberOf: [],
+                jnjUsername: 'test',
+                name: 'Test User',
+                sub: '123'
+            });
+
+            const res = await request(app).get("/get_permissions");
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body.data.hasUserPermission).toBe(false);
+        });
+    });
+
+    describe("GET /export_login_logs", () => {
+        it("should set PDF headers", async () => {
+            db.login_logs.findAll.mockResolvedValue([]);
+
+            const res = await request(app)
+                .get("/export_login_logs")
+                .expect('Content-Type', 'application/pdf')
+                .expect('Content-Disposition', /audit-logs-.*\.pdf/);
+
+            expect(res.statusCode).toBe(200);
+        });
+
+        it("should handle search query", async () => {
+            db.login_logs.findAll.mockResolvedValue([]);
+
+            await request(app)
+                .get("/export_login_logs")
+                .query({ search: "test" });
+
+            expect(db.login_logs.findAll).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.any(Object)
+                })
+            );
         });
     });
 });
