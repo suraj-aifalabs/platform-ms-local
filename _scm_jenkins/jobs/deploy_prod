@@ -1,0 +1,16 @@
+folder('platform-ms')
+pipelineJob('platform-ms/deploy-prod') {
+    definition {
+        cpsScm {
+          scm {
+            git {
+                branch('master')
+                remote {
+                    url('https://sourcecode.jnj.com/scm/asx-jicv/platform-ms.git')
+                    credentials('sourcecode-bitbucket')
+                }
+            }
+          }
+        }
+    }
+}

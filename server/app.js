@@ -53,7 +53,7 @@ app.use(logger("dev"));
 
 const corsOptions = {
     // eslint-disable-next-line no-undef
-    origin: process.env.ALLOWED_ORIGIN?.split(",").map(origin => origin.trim())|| "*",
+    origin: process.env.ALLOWED_ORIGIN?.split(",").map(origin => origin.trim()) || "*",
     methods: "GET,POST,PUT,DELETE",
 };
 
@@ -73,3 +73,5 @@ app.listen(PORT, () => {
 );
 
 app.use(ErrorHandler);
+
+exports.app = app;

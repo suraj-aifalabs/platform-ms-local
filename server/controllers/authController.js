@@ -3,7 +3,6 @@ const catchAsyncError = require("../middlewares/catchAsyncError");
 const { db } = require("../config/db");
 const { fn, col, where } = require("sequelize");
 const { sanitizeInput } = require("../utils/sanitizeRules");
-const ExcelJS = require("exceljs");
 const { graphAPI } = require("../utils/graphUtils");
 const { PERMISSION_CONST, DEFAULT_PERMISSION } = require("../utils/permissionUtils");
 const PDFDocument = require("pdfkit");
@@ -81,6 +80,10 @@ exports.authAction = catchAsyncError(async (req, res) => {
         jnjUsername: username.toLowerCase(),
     };
 
+    // eslint-disable-next-line no-undef
+    if (process.env.MOCK_GROUP) {
+        userObj.memberOf = ["JAN-APP-ATARA-DEV-SYSTEMADMIN"];
+    }
 
     if (action === "login") {
         await db.user_sessions.update(
@@ -184,150 +187,150 @@ exports.getLoginLogs = catchAsyncError(async (req, res) => {
 });
 
 exports.exportLoginLogs = catchAsyncError(async (req, res) => {
-  const search = req.query.search || "";
-  const sortBy = req.query.sortBy || "createdAt";
-  const sortOrder = req.query.sortOrder?.toUpperCase() === "ASC" ? "ASC" : "DESC";
- 
-  const userDetails = req.user || {};
-  const exportedBy = userDetails.name || userDetails.username || "System";
-  const exportedAt = new Date().toLocaleString();
- 
-  const whereClause = {};
-  if (search !== "") {
-    whereClause[db.Sequelize.Op.or] = [
-      where(fn("LOWER", col("username")), "LIKE", `%${search.toLowerCase()}%`),
-      where(fn("LOWER", col("name")), "LIKE", `%${search.toLowerCase()}%`)
-    ];
-  }
- 
-  const logs = await db.login_logs.findAll({
-    where: whereClause,
-    order: [[sortBy, sortOrder]],
-    attributes: {
-      exclude: ["accessToken"]
+    const search = req.query.search || "";
+    const sortBy = req.query.sortBy || "createdAt";
+    const sortOrder = req.query.sortOrder?.toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+    const userDetails = req.user || {};
+    const exportedBy = userDetails.name || userDetails.username || "System";
+    const exportedAt = new Date().toLocaleString();
+
+    const whereClause = {};
+    if (search !== "") {
+        whereClause[db.Sequelize.Op.or] = [
+            where(fn("LOWER", col("username")), "LIKE", `%${search.toLowerCase()}%`),
+            where(fn("LOWER", col("name")), "LIKE", `%${search.toLowerCase()}%`)
+        ];
     }
-  });
- 
-  
-  const doc = new PDFDocument({ margin: 30, size: "A4" });
- 
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const filename = `audit-logs-${timestamp}.pdf`;
- 
-  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-  res.setHeader("Content-Type", "application/pdf");
- 
-  doc.pipe(res);
- 
-  let pageNumber = 1;
-  const FOOTER_RESERVED_SPACE = 70;
-  const addFooter = (currentPageNumber) => {
-    const footerStartY = doc.page.height - 60;
-   
-    doc.strokeColor("#366092")
-       .lineWidth(1)
-       .moveTo(30, footerStartY)
-       .lineTo(doc.page.width - 30, footerStartY)
-       .stroke();
-   
-    doc.fontSize(8)
-       .fillColor("#666");
-   
-    doc.text(`Exported by ${exportedBy} on ${exportedAt}`,
-             30, footerStartY + 8, { continued: false });
-   
-    doc.text(`Page ${currentPageNumber}`,
-             doc.page.width - 100, footerStartY + 8,
-             { align: "right", continued: false });
-  };
- 
-  const addNewPage = () => {
-    doc.addPage();
-    pageNumber++;
-   
-    const currentY = 30;
-    let headerX = startX;
-    headers.forEach((header, i) => {
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(10)
-        .fillColor("white")
-        .rect(headerX, currentY, columnWidths[i], rowHeight)
-        .fill("#366092")
-        .fillColor("white")
-        .text(header, headerX + 5, currentY + 6, {
-          width: columnWidths[i] - 10,
-          align: "left",
-          continued: false,
-        });
-      headerX += columnWidths[i];
+
+    const logs = await db.login_logs.findAll({
+        where: whereClause,
+        order: [[sortBy, sortOrder]],
+        attributes: {
+            exclude: ["accessToken"]
+        }
     });
-   
-    return currentY + rowHeight;
-  };
- 
-  doc.fontSize(16).fillColor("#333").text("Audit Logs", { align: "center" });
- 
-  const headers = ["Name", "Username", "Event", "Time Zone", "Timestamp"];
-  const columnWidths = [120, 100, 80, 120, 180];
-  const rowHeight = 22;
-  const startX = 30;
-  let currentY = doc.y + 20;
- 
-  let x = startX;
-  headers.forEach((header, i) => {
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(10)
-      .fillColor("white")
-      .rect(x, currentY, columnWidths[i], rowHeight)
-      .fill("#366092")
-      .fillColor("white")
-      .text(header, x + 5, currentY + 6, {
-        width: columnWidths[i] - 10,
-        align: "left",
-        continued: false,
-      });
-    x += columnWidths[i];
-  });
- 
-  currentY += rowHeight;
- 
-  logs.forEach((log) => {
-    const row = [
-      log.name || "N/A",
-      log.username || "N/A",
-      log.action ? log.action.charAt(0).toUpperCase() + log.action.slice(1) : "N/A",
-      log.timeZone || "N/A",
-      log.createdAt ? new Date(log.createdAt).toLocaleString() : "N/A",
-    ];
- 
-    // Check if we need a new page - reserve space for footer
-    if (currentY + rowHeight > doc.page.height - FOOTER_RESERVED_SPACE) {
-      addFooter(pageNumber);
-      currentY = addNewPage();
-    }
- 
+
+
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `audit-logs-${timestamp}.pdf`;
+
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Type", "application/pdf");
+
+    doc.pipe(res);
+
+    let pageNumber = 1;
+    const FOOTER_RESERVED_SPACE = 70;
+    const addFooter = (currentPageNumber) => {
+        const footerStartY = doc.page.height - 60;
+
+        doc.strokeColor("#366092")
+            .lineWidth(1)
+            .moveTo(30, footerStartY)
+            .lineTo(doc.page.width - 30, footerStartY)
+            .stroke();
+
+        doc.fontSize(8)
+            .fillColor("#666");
+
+        doc.text(`Exported by ${exportedBy} on ${exportedAt}`,
+            30, footerStartY + 8, { continued: false });
+
+        doc.text(`Page ${currentPageNumber}`,
+            doc.page.width - 100, footerStartY + 8,
+            { align: "right", continued: false });
+    };
+
+    const addNewPage = () => {
+        doc.addPage();
+        pageNumber++;
+
+        const currentY = 30;
+        let headerX = startX;
+        headers.forEach((header, i) => {
+            doc
+                .font("Helvetica-Bold")
+                .fontSize(10)
+                .fillColor("white")
+                .rect(headerX, currentY, columnWidths[i], rowHeight)
+                .fill("#366092")
+                .fillColor("white")
+                .text(header, headerX + 5, currentY + 6, {
+                    width: columnWidths[i] - 10,
+                    align: "left",
+                    continued: false,
+                });
+            headerX += columnWidths[i];
+        });
+
+        return currentY + rowHeight;
+    };
+
+    doc.fontSize(16).fillColor("#333").text("Audit Logs", { align: "center" });
+
+    const headers = ["Name", "Username", "Event", "Time Zone", "Timestamp"];
+    const columnWidths = [120, 100, 80, 120, 180];
+    const rowHeight = 22;
+    const startX = 30;
+    let currentY = doc.y + 20;
+
     let x = startX;
-    row.forEach((cell, i) => {
-      doc
-        .font("Helvetica")
-        .fontSize(9)
-        .fillColor("black")
-        .text(cell, x + 5, currentY + 6, {
-          width: columnWidths[i] - 10,
-          align: "left",
-          continued: false,
-        });
-      x += columnWidths[i];
+    headers.forEach((header, i) => {
+        doc
+            .font("Helvetica-Bold")
+            .fontSize(10)
+            .fillColor("white")
+            .rect(x, currentY, columnWidths[i], rowHeight)
+            .fill("#366092")
+            .fillColor("white")
+            .text(header, x + 5, currentY + 6, {
+                width: columnWidths[i] - 10,
+                align: "left",
+                continued: false,
+            });
+        x += columnWidths[i];
     });
- 
+
     currentY += rowHeight;
-  });
- 
-  addFooter(pageNumber);
- 
-  doc.end();
+
+    logs.forEach((log) => {
+        const row = [
+            log.name || "N/A",
+            log.username || "N/A",
+            log.action ? log.action.charAt(0).toUpperCase() + log.action.slice(1) : "N/A",
+            log.timeZone || "N/A",
+            log.createdAt ? new Date(log.createdAt).toLocaleString() : "N/A",
+        ];
+
+        // Check if we need a new page - reserve space for footer
+        if (currentY + rowHeight > doc.page.height - FOOTER_RESERVED_SPACE) {
+            addFooter(pageNumber);
+            currentY = addNewPage();
+        }
+
+        let x = startX;
+        row.forEach((cell, i) => {
+            doc
+                .font("Helvetica")
+                .fontSize(9)
+                .fillColor("black")
+                .text(cell, x + 5, currentY + 6, {
+                    width: columnWidths[i] - 10,
+                    align: "left",
+                    continued: false,
+                });
+            x += columnWidths[i];
+        });
+
+        currentY += rowHeight;
+    });
+
+    addFooter(pageNumber);
+
+    doc.end();
 });
 
 exports.createUsers = catchAsyncError(async (req, res) => {
@@ -451,15 +454,10 @@ exports.getPermissions = catchAsyncError(async (req, res) => {
     userData.userPermission = defaultPermissions;
     userData.hasUserPermission = hasUserPermission;
 
-    // eslint-disable-next-line no-undef
-    const env = process.env.NODE_ENV ?? "";
     res.status(200).json({
         message: "success",
         data: userData,
-        DEFAULT_PERMISSION,
         allPermission,
         user,
-        PERMISSION_CONST,
-        env
     });
 });

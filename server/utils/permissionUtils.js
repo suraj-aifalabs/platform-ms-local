@@ -158,11 +158,11 @@ const DEV_CARTREADONLYUS = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -268,11 +268,11 @@ const DEV_CARTREADONLYEU = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -378,11 +378,11 @@ const DEV_CARTPIIREADONLYUS = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -488,11 +488,11 @@ const DEV_CARTPIIREADONLYEU = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -552,11 +552,11 @@ const DEV_SYSTEMADMIN = {
     "permissionList": [
         {
             "module": "PII",
-            "hasAccess": true,
+            "hasAccess": false,
             "permissions": [
                 {
                     "label": "PII : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -584,15 +584,15 @@ const DEV_SYSTEMADMIN = {
                 },
                 {
                     "label": "Tracking : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Tracking : sign",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Tracking : print",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -606,7 +606,7 @@ const DEV_SYSTEMADMIN = {
                 },
                 {
                     "label": "Reporting : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -620,7 +620,7 @@ const DEV_SYSTEMADMIN = {
                 },
                 {
                     "label": "Monitoring : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -638,11 +638,11 @@ const DEV_SYSTEMADMIN = {
                 },
                 {
                     "label": "Certificate Management : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Certificate Management : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : read",
@@ -756,11 +756,11 @@ const DEV_CARTADMINUS = {
                 },
                 {
                     "label": "Audit Logs : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -866,11 +866,11 @@ const DEV_CARTADMINEU = {
                 },
                 {
                     "label": "Audit Logs : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -1150,11 +1150,11 @@ const QA_CARTREADONLYUS = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -1260,11 +1260,11 @@ const QA_CARTREADONLYEU = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -1370,11 +1370,11 @@ const QA_CARTPIIREADONLYUS = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -1480,11 +1480,11 @@ const QA_CARTPIIREADONLYEU = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -1544,11 +1544,11 @@ const QA_SYSTEMADMIN = {
     "permissionList": [
         {
             "module": "PII",
-            "hasAccess": true,
+            "hasAccess": false,
             "permissions": [
                 {
                     "label": "PII : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -1576,15 +1576,15 @@ const QA_SYSTEMADMIN = {
                 },
                 {
                     "label": "Tracking : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Tracking : sign",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Tracking : print",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -1598,7 +1598,7 @@ const QA_SYSTEMADMIN = {
                 },
                 {
                     "label": "Reporting : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -1612,7 +1612,7 @@ const QA_SYSTEMADMIN = {
                 },
                 {
                     "label": "Monitoring : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -1630,11 +1630,11 @@ const QA_SYSTEMADMIN = {
                 },
                 {
                     "label": "Certificate Management : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Certificate Management : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : read",
@@ -1748,11 +1748,11 @@ const QA_CARTADMINUS = {
                 },
                 {
                     "label": "Audit Logs : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -1858,11 +1858,11 @@ const QA_CARTADMINEU = {
                 },
                 {
                     "label": "Audit Logs : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -2143,11 +2143,11 @@ const PROD_CARTREADONLYUS = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -2253,11 +2253,11 @@ const PROD_CARTREADONLYEU = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -2363,11 +2363,11 @@ const PROD_CARTPIIREADONLYUS = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -2473,11 +2473,11 @@ const PROD_CARTPIIREADONLYEU = {
         },
         {
             "module": "Reporting",
-            "hasAccess": false,
+            "hasAccess": true,
             "permissions": [
                 {
                     "label": "Reporting : read",
-                    "hasAccess": false
+                    "hasAccess": true
                 },
                 {
                     "label": "Reporting : write",
@@ -2537,11 +2537,11 @@ const PROD_SYSTEMADMIN = {
     "permissionList": [
         {
             "module": "PII",
-            "hasAccess": true,
+            "hasAccess": false,
             "permissions": [
                 {
                     "label": "PII : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -2569,15 +2569,15 @@ const PROD_SYSTEMADMIN = {
                 },
                 {
                     "label": "Tracking : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Tracking : sign",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Tracking : print",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -2591,7 +2591,7 @@ const PROD_SYSTEMADMIN = {
                 },
                 {
                     "label": "Reporting : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -2605,7 +2605,7 @@ const PROD_SYSTEMADMIN = {
                 },
                 {
                     "label": "Monitoring : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -2623,11 +2623,11 @@ const PROD_SYSTEMADMIN = {
                 },
                 {
                     "label": "Certificate Management : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Certificate Management : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : read",
@@ -2741,11 +2741,11 @@ const PROD_CARTADMINUS = {
                 },
                 {
                     "label": "Audit Logs : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },
@@ -2851,11 +2851,11 @@ const PROD_CARTADMINEU = {
                 },
                 {
                     "label": "Audit Logs : read",
-                    "hasAccess": true
+                    "hasAccess": false
                 },
                 {
                     "label": "Audit Logs : write",
-                    "hasAccess": true
+                    "hasAccess": false
                 }
             ]
         },

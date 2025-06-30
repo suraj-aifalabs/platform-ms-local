@@ -1,0 +1,104 @@
+# qa values for atara.
+# This is a YAML-formatted file. 
+# Declare variables to be passed into your templates.
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+## environmental variables to pods (name and value)
+envVariables: 
+  - name: ALLOWED_ORIGIN
+    value: "NONE"
+  - name: PORT
+    value: "3001"
+  - name: NODE_ENV
+    value: QA
+  - name: DB_PORT
+    value: "5432"
+  - name: DB_HOST
+    value: atara-dev.ctocc00gyn2y.us-east-1.rds.amazonaws.com
+  - name: DB_USER
+    value: sa-rds-atara-dev
+  - name: DB_NAME
+    value: qa_db_atara
+  - name: POSTGRESQL_DB_PASSWORD
+    value: ATARA-QA-POSTGRESQL-DB-PASSWORD
+  - name: TENANT_ID
+    value: 3ac94b33-9135-4821-9502-eafda6592a35
+  - name: CLIENT_ID
+    value: 906bba13-1d38-4d7c-9a54-e094be722829
+  - name: MSAL_CLIENT_SECRET
+    value: ATARA-QA-MSAL-CLIENT-SECRET
+  - name: MILESTONE_CLIENT_ID
+    value: ATARA-QA-MILESTONE-CLIENT-ID
+  - name: MILESTONE_CLIENT_SECRET
+    value: ATARA-QA-MILESTONE-CLIENT-SECRET 
+  - name: AWS_REGION
+    value: us-east-1
+
+#This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ 
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+# service:
+#   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+#   type: ClusterIP
+#   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+#   port: 80
+
+# container:
+#   name: http
+#   port: 80
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: true
+  hosts:
+    - host: platform.atara-qa.apps.jnj.com
+      paths:
+        - path: /api/platform/(.*)
+          pathType: ImplementationSpecific
+  tls:
+   - secretName: platform-qa-tls
+     hosts:
+       - platform.atara-qa.apps.jnj.com
+
+# resources:
+#   # We usually recommend not to specify default resources and to leave this as a conscious
+#   # choice for the user. This also increases chances charts run on environments with little
+#   # resources, such as Minikube. If you do want to specify resources, uncomment the following
+#   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#   requests:
+#     memory: "300Mi"
+#     cpu: "100m"
+#   limits:
+#     memory: "1024Mi"
+#     cpu: "200m"
+  

@@ -42,7 +42,26 @@ module.exports.permissionMiddleware = (requiredPermission) => {
                     message: `Access denied. Required permission: ${requiredPermission}`,
                 });
             }
+            const uniqueRegions = new Set();
+
+            if (userData?.memberOf?.some(permission => permission.endsWith("EU"))) {
+                uniqueRegions.add("EU");
+            }
+
+            if (userData?.memberOf?.some(permission => permission.endsWith("US"))) {
+                uniqueRegions.add("US");
+            }
+
+            if (userData?.memberOf?.some(permission => permission.endsWith("SYSTEMADMIN"))) {
+                uniqueRegions.add("US");
+                uniqueRegions.add("EU");
+            }
+
+            const regions = Array.from(uniqueRegions);
+
             req.userPermissions = userPermissions;
+            req.user.regions = regions;
+
             next();
         } catch (error) {
             // eslint-disable-next-line no-console
